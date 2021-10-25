@@ -42,13 +42,37 @@ Cowsay s'installe dans `/usr/games/cowsay`
 
 ## Exercice 2: Run Flask App 
 
--  Créer le Dockerfile dans le dossier microblog qui va permettre de faire tourner l'application Flask
--  Utilisez l'image `python:3-alpine` ou une image de base `Ubuntu`et installer Python
--  Flask utilise une variable d'environnement `FLASK_APP`avec le nom du fichier Python de l'application. 
--  Installer flask dans votre container : `requirements.txt`. Pensez à utiliser la fonction de cache de Docker
--  Exposer le port 5000
--  Liser le fichier `boot.sh` et faites tourner l'application Flask en PROD. 
--  Lancez l'app avec le fichier `boot.sh`
+-  Créer le Dockerfile dans le dossier microblog qui va permettre de faire tourner l'application Flask : 
+  -  Utilisez l'image `python:3-alpine` ou une image de base `Ubuntu`et installer Python
+  -  Flask utilise une variable d'environnement `FLASK_APP`avec le nom du fichier Python de l'application. 
+  -  Installer flask dans votre container : `requirements.txt`. Pensez à utiliser la fonction de cache de Docker
+  -  Exposer le port 5000
+  -  Liser le fichier `boot.sh` et faites tourner l'application Flask en PROD. 
+  -  Lancez l'app avec le fichier `boot.sh`
+- Construire l'image  
+- Lancer le container en publiant un port de votre hôte.  
+- Accéder à http://localhost:5000
+
+### Exercice 2.5 FALCULTATIF :
+- Construisez un second Dockerfile pour une nouvelle application microblog.
+  - Utilisez ce script de boot : 
+```sh
+#!/bin/bash
+
+# ...
+
+set -e
+if [ "$APP_ENVIRONMENT" = 'DEV' ]; then
+    echo "Running Development Server"
+    exec flask run -h 0.0.0.0
+else
+    echo "Running Production Server"
+    exec gunicorn -b :5000 --access-logfile - --error-logfile - app_name:app
+fi
+```
+- Déclarer la variable d'environnement `APP_ENVIRONMENT` à `PROD`par défault
+- Construisez l'image
+- Déployer **2** containers. Un de PROD et un de DEV sur un port différent. 
 
 ## Exercice 3 : Healthcheck 
 
