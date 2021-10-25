@@ -1,14 +1,5 @@
 #!/bin/sh
 
-# cette partie sert à effectuer des opérations sur la base de données si nécessaires
-while true; do
-    if flask db upgrade; then
-        break
-    fi
-    echo Deploy command failed, retrying in 5 secs...
-    sleep 5
-done
-
 # cette partie permet de faire varier l'environnement du container
 set -e
 if [ "$CONTEXT" = 'DEV' ]; then
