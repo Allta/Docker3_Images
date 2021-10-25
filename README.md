@@ -54,8 +54,9 @@ Cowsay s'installe dans `/usr/games/cowsay`
 - Accéder à http://localhost:5000
 
 ### Exercice 2.5 FALCULTATIF :
-- Construisez un second Dockerfile pour une nouvelle application microblog.
-  - Utilisez ce script de boot : 
+
+- Construisez un second Dockerfile pour une nouvelle application microblog (Dupliquer le dossier microblog)
+  - Remplacer le script de boot par  : 
 ```sh
 #!/bin/bash
 
