@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world:
-    return 'Hey, Flask tourne dans notre container !'
+    return 'Hey, Flask tourne dans notre container -- Check /kill pour killer notre appli!'
 
 @app.route('/health')
 def health():
