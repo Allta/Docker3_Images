@@ -204,7 +204,7 @@ if [ "$APP_ENVIRONMENT" == 'DEV' ]; then
     exec flask run -h 0.0.0.0
 else
     echo "Running Production Server"
-    exec gunicorn -b :5000 --access-logfile - --error-logfile - app_name:app
+    exec gunicorn -b :5000 --access-logfile - --error-logfile - microblog:app
 fi
 ```
 - Déclarer la variable d'environnement `APP_ENVIRONMENT` à `PROD`par défault
