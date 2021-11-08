@@ -15,11 +15,6 @@ COPY static static
 # Compiler l'app Go
 RUN go build dispatcher.go
 
-# Using the exec syntax (JSON list of strings) makes
-# sure that "dispatcher" will be PID 1, and will therefore
-# receive signals correctly (allowing Ctrl-C to work
-# correctly, for instance).
-
 # En utilisant la syntax exec on s'assure que
 # "./dispatcher" sera PID 1
 
