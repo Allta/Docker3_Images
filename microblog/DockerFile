@@ -7,7 +7,7 @@ RUN apt-get install -y python pip
 # amméliorer le cache de l'image
 COPY ./requirements.txt /requirements.txt
 # Installation des dépendances
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 
 ENV FLASK_APP microblog.py
 
