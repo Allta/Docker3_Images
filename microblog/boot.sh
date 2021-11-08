@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # cette partie permet de faire varier l'environnement du container
 set -e
