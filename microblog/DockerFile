@@ -1,0 +1,22 @@
+# Flask étant une API Python on lance l'image Python 
+FROM python:3-alpine
+
+# Copie des dépendances avant le dossier pour
+# amméliorer le cache de l'image
+COPY ./requirements.txt /requirements.txt
+# Installation des dépendances
+RUN pip3 install -r requirements.txt
+
+ENV FLASK_APP microblog.py
+
+# Copie du projet séparé des dépendances
+# pour ne pas réinstaller toutes les dépendances
+# lors de la modification du code du projet
+COPY ./ /microblog
+WORKDIR /microblog
+
+ENV CONTEXT PROD
+
+EXPOSE 5000
+
+CMD ["./boot.sh"]
