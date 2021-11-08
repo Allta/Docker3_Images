@@ -1,6 +1,8 @@
 # Flask étant une API Python on lance l'image Python 
-FROM python:3-alpine
+FROM ubuntu
 
+RUN apt-get -y update 
+RUN apt-get install -y python pip
 # Copie des dépendances avant le dossier pour
 # amméliorer le cache de l'image
 COPY ./requirements.txt /requirements.txt
