@@ -199,7 +199,7 @@ Informations supplémentaires :
 # ...
 
 set -e
-if [ "$APP_ENVIRONMENT" = 'DEV' ]; then
+if [ "$APP_ENVIRONMENT" == 'DEV' ]; then
     echo "Running Development Server"
     exec flask run -h 0.0.0.0
 else
