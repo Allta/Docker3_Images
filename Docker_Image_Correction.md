@@ -68,6 +68,9 @@ Dans notre exemple :
 - un container `ba6acccedd29` est créer à partir de l'image de base **Ubuntu**.
 - L'instruction `ENTRYPOINT` est exécutée dans le container `cc226b9d7dfc` puis commitée dans `99ef5b94553a` puis supprimé.
 
+
+![docker run cowsay](https://i.imgur.com/ajnJc0J.png)
+
 ### Faut-il utiliser **CMD** ou **ENTRYPOINT** ? 
 
 Dans notre DockerFile nous utilisons `ENTRYPOINT` car nous souhaitons fournir des arguments à la commande lancée en tant que PID 1.
@@ -90,136 +93,24 @@ J'ai choisi la méthode *exec* car elle permet de pousser en **PID 1** la comman
 Le but de l'exercice est d'écrire les Dockerfiles pour les 3 containers.
 
 ### web
-
-C'est un serveur web en Go. Pour compiler du Go, on peut utiliser l'image `golang`, ou bien installer les paquetages Go dans n'importe quelle image de base.
-
-Tout le code est contenu dans un fichier source unique (`dispatcher.go`), et se compile de la manière suivante :
-
-```
-go build dispatcher.go
-```
-
-Cela produit un exécutable appelé `dispatcher`, qui se lance comme suit :
-
-```
-./dispatcher
-Listening on port 80
-```
-
-Le répertoire appelé `static` doit être dans le répertoire courant
-lors du lancement du serveur.
-
-Informations supplémentaires :
-
-- le serveur écoute sur le port 80
-- le compilateur go n'est plus nécessaire une fois le programme compilé
-
+![dockerfile web](https://i.imgur.com/3XPNzWf.png)
 
 ### words
 
-C'est un serveur API REST en Java. Il se compile avec maven.
+![dockerfile words](https://i.imgur.com/zl6wjk5.png)
 
-Sur une distribution Debian/Ubuntu, on peut installer Java et maven comme suit :
+ Sans rajouter la syntaxe `exec` dans la **CMD** du Dockerfile nous ne pouvons pas quitter le container en utilisant le Ctrl-C : 
+ 
+![image](https://user-images.githubusercontent.com/51991304/141197575-eed8194a-ce82-4e5c-9b5a-8d65848e9e9d.png)
 
-```
-apt-get install maven openjdk-8-jdk
-```
+En rajoutant la commande **exec** devant le lancement du programme Java nous pouvons kill le container abec Ctrl-C car le **PID 1** sera le programme java et répondra au Ctrl-C à l'inverse de *bash*.
 
-Voici la commande qui permet d'invoquer maven pour compiler le programme :
+![image](https://user-images.githubusercontent.com/51991304/141197592-3f96dbe3-a4b6-4ee0-815c-648e0d2141f3.png)
 
-```
-mvn verify
-```
 
-Le résultat est un fichier appelé `words.jar` placé dans le répertoire `target`.
-
-Le serveur se lance ensuite avec la commande suivante :
-```
-java -Xmx8m -Xms8m -jar words.jar
-```
-
-(En se plaçant dans le répertoire où se trouve `words.jar`.)
-
-Informations supplémentaires :
-
-- le serveur écoute sur le port 8080
-- pour la compilation il faut les paquetages maven et openjdk-8-jdk
-- pour l'exécution il faut le paquetage openjdk-8-jdk (maven n'est pas nécessaire)
-
+![image](https://user-images.githubusercontent.com/51991304/141197565-e47b2227-a07c-4847-9ab6-b4dd11e362b4.png)
 
 ### db
-
-C'est une base de données PostgreSQL.
-
-La base de donnée doit être initialisée avec le schéma (création de
-la base et des tables) et les données (utilisées par l'application).
-
-Le fichier `words.sql` contient les commandes SQL nécessaires.
-
-```
-# cat words.sql
-CREATE TABLE nouns (word TEXT NOT NULL);
-CREATE TABLE verbs (word TEXT NOT NULL);
-CREATE TABLE adjectives (word TEXT NOT NULL);
-
-INSERT INTO nouns(word) VALUES
-  ('cloud'),
-  ('elephant'),
-  ('gø language'),
-  ('laptøp'),
-  ('cøntainer'),
-  ('micrø-service'),
-  ('turtle'),
-  ('whale'),
-  ('gøpher'),
-  ('møby døck'),
-  ('server'),
-  ('bicycle'),
-  ('viking'),
-  ('mermaid'),
-  ('fjørd'),
-  ('legø'),
-  ('flødebolle'),
-  ('smørrebrød');
-
-INSERT INTO verbs(word) VALUES
-  ('will drink'),
-  ('smashes'),
-  ('smøkes'),
-  ('eats'),
-  ('walks tøwards'),
-  ('løves'),
-  ('helps'),
-  ('pushes'),
-  ('debugs'),
-  ('invites'),
-  ('hides'),
-  ('will ship');
-
-INSERT INTO adjectives(word) VALUES
-  ('the exquisite'),
-  ('a pink'),
-  ('the røtten'),
-  ('a red'),
-  ('the serverless'),
-  ('a brøken'),
-  ('a shiny'),
-  ('the pretty'),
-  ('the impressive'),
-  ('an awesøme'),
-  ('the famøus'),
-  ('a gigantic'),
-  ('the gløriøus'),
-  ('the nørdic'),
-  ('the welcøming'),
-  ('the deliciøus');
-```
-
-Informations supplémentaires :
-
-- il est fortement conseillé d'utiliser l'image officielle PostgreSQL qui se trouve sur le Docker Hub (elle s'appelle `postgres`)
-- sur la [page de l'image officielle](https://hub.docker.com/_/postgres) sur le Docker Hub, vous trouverez une documentation abondante; la section "Initialization scripts" est particulièrement utile pour comprendre comment charger le fichier `words.sql`
-- il est conseillé de protéger l'accès à la base avec un mot de passe, mais dans le cas présent, on acceptera de se simplifier la vie en autorisant toutes les connexions (en positionnant la variable `POSTGRES_HOST_AUTH_METHOD=trust`)
 
 
 ## Exercice 3: Run Flask App 
