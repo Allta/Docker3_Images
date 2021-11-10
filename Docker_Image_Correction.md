@@ -2,21 +2,18 @@
 
 ## Exercice 1 : Faites parler votre container
 
-Cowsay man : `https://debian-facile.org/doc:jeux:cowsay`
-Cowsay s'installe dans `/usr/games/cowsay`
-
-- Créer un nouveau dossoier `cowsay`
+### Créer un nouveau dossoier `cowsay`
 
 Par convention, il faut créer un nouveau dossier pour chaque application. De plus il faut mettre le Dockerfile à la racine de notre projet. 
 Cette bonne pratique s'explique par l'utilisation des repository distant (Github/Gitlab/Jenkins) pour l'intégration continue. 
 Pour builder une application, il est nécessaire d'avoir toutes les informations, à savoir *code, dockerfile, ressources statiques*, au même endroit. 
 
 
-- Créer un Dockerfile qui permet de :
+### Créer un Dockerfile qui permet de :
   - docker run --rm cowsay Hello_World !
   - docker run --rm cowsay -f stegosaurus Ynov B3
 
-![Dockerfile](https://i.imgur.com/97VfAgl.png)
+![Dockerfile](https://i.imgur.com/cuVFoz6.png)
 
 Le Dockerfile est basé sur une image Ubuntu car le paquet **Cowsay** est présent dans les dépôts de paquet officiel.
 Pour optimiser le build nous aurions pu utiliser une image de base plus légère.
@@ -40,8 +37,43 @@ Extrait du man `debconf`:
           non-default  answers  to questions, you will need to preseed the
           debconf database; see the section below  on  Unattended  Package
           Installation for more details.
+          
+Lors de la commande docker build, le Dockerfile est envoyé comme une archive au daemon docker. Dans notre cas il est présent sur notre machine, mais il existe des cas ou le daemon docker (Le service docker) est sur un serveur remote. Cela permet d'avoir une machine dédiée au build d'image et de libérer de la bande passante sur les postes des développeurs ou des Ops. 
+ 
+ Lors du build nous voyons des ID apparaitre : 
+ 
+ ```bash
+Step 1/5 : FROM ubuntu
+ ---> ba6acccedd29
+Step 2/5 : RUN apt-get update
+ ---> Using cache
+ ---> f4ead90947e3
+ ...
+ ---> Running in 9a2cd7624ea5                                                                  
+Removing intermediate container 9a2cd7624ea5                                                   
+ ---> e02f21d509d8                                                                             
+Step 5/5 : ENTRYPOINT [ "cowsay"]                                                              
+ ---> Running in cc226b9d7dfc                                                                  
+Removing intermediate container cc226b9d7dfc                                                   
+ ---> 99ef5b94553a                     
+Successfully built 99ef5b94553a                                                                
+Successfully tagged cowsay:latest   
+```
 
-- Faut-il utiliser **CMD** ou **ENTRYPOINT** ? 
+Chaque ** Step** représente un layer. 
+
+A chaque step un container est créer et les instructions sont executés dans ce container. Le container est ensuite commité pour créer une nouvelle image puis supprimé.
+
+Dans notre exemple :
+- un container `ba6acccedd29` est créer à partir de l'image de base **Ubuntu**.
+- L'instruction `ENTRYPOINT` est exécutée dans le container `cc226b9d7dfc` puis commitée dans `99ef5b94553a` puis supprimé.
+
+### Faut-il utiliser **CMD** ou **ENTRYPOINT** ? 
+
+Dans notre DockerFile nous utilisons `ENTRYPOINT` car nous souhaitons fournir des arguments à la commande lancée en tant que PID 1.
+Pour rappel : Docker utilise la commande précisé dans l'instructions CMD/ENTRYPOINT comme PID 1 au sein du container. 
+
+
 
 ## Exercice 2 : Dockerfile WordSmith
 
