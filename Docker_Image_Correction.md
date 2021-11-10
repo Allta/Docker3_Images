@@ -73,7 +73,17 @@ Dans notre exemple :
 Dans notre DockerFile nous utilisons `ENTRYPOINT` car nous souhaitons fournir des arguments à la commande lancée en tant que PID 1.
 Pour rappel : Docker utilise la commande précisé dans l'instructions CMD/ENTRYPOINT comme PID 1 au sein du container. 
 
+Pour ces 2 instructions il existe 2 façons d'écrire la commande. 
 
+Avec du shell wraping qui lance la commande spécifiée  à l’intérieur d’un shell avec /bin/sh -c:
+
+`ENTRYPOINT cowsay`
+
+Ou en avec la méthode exec, qui permet aux images qui n’ont pas /bin/sh de lancer les commandes : 
+
+`ENTRYPOINT ["cowsay"]`
+
+J'ai choisi la méthode *exec* car elle permet de pousser en **PID 1** la commande cowsay et non /bin/sh -c ou bash. Ce qui permet de kill le container à l'aide d'un Ctrl-C qui envoie un `SIGTERM` au PID 1.
 
 ## Exercice 2 : Dockerfile WordSmith
 
