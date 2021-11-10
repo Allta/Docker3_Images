@@ -24,13 +24,14 @@ Pour optimiser le build nous aurions pu utiliser une image de base plus légère
 Une image Docker est composé de layer ou de couche. Chaques instructions rajoute une couche à l'image, c'est pourquoi il faut quand c'est possible optimiser les commandes et réduire le nombre d'instructions. Cela réduira le temps de build.
 
 Lors de l'installation de paquet pour personnaliser notre image, il faut absolument rendre les commandes non interactives car nous n'avons pas la main pour renseigner des paramètres (Par exemple : *yes* pour l'installation de paquet) lors du build. 
+
 Pour cela nous rajoutons le flag **-y** qui permet d'auto-valider les paquets lors de l'installation. 
+
 Nous aurions aussi pu rajouter une variable d'environnement ajouté avant la commandne `apt` : ` DEBIAN_FRONTEND=noninteractive`.
 
 Extrait du man `debconf`: 
 
-  noninteractive
-  
+      noninteractive  
           This is the anti-frontend. It never interacts with you  at  all,
           and  makes  the  default  answers  be used for all questions. It
           might mail error messages to root, but that's it;  otherwise  it
