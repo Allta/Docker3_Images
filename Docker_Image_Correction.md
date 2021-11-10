@@ -112,6 +112,13 @@ En rajoutant la commande **exec** devant le lancement du programme Java nous pou
 ![image](https://user-images.githubusercontent.com/51991304/141198021-c90d305d-0a14-4cb6-a9cb-8201cf47e128.png)
 
 
+
+Les trois containers se lancent correctement après les avoir buildé à l'aide de **docker build** : 
+
+![image](https://user-images.githubusercontent.com/51991304/141198567-11b6b79a-c6cb-45bd-ab0e-bfb744380f43.png)
+
+Nous pouvons naviguer sur notre navigateur et accéder au front de l'application (Qui tourne sur le container Web).
+
 ## Exercice 3: Run Flask App 
 
 -  Créer le Dockerfile dans le dossier microblog qui va permettre de faire tourner l'application Flask : 
