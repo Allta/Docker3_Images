@@ -2,7 +2,7 @@
 
 ## Exercice 1 : Faites parler votre container
 
-### Créer un nouveau dossoier `cowsay`
+### Créer un nouveau dossier `cowsay`
 
 Par convention, il faut créer un nouveau dossier pour chaque application. De plus il faut mettre le Dockerfile à la racine de notre projet. 
 Cette bonne pratique s'explique par l'utilisation des repository distant (Github/Gitlab/Jenkins) pour l'intégration continue. 
