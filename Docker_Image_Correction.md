@@ -6,13 +6,37 @@ Cowsay man : `https://debian-facile.org/doc:jeux:cowsay`
 Cowsay s'installe dans `/usr/games/cowsay`
 
 - Créer un nouveau dossoier `cowsay`
+
+Par convention, il faut créer un nouveau dossier pour chaque application. De plus il faut mettre le Dockerfile à la racine de notre projet. 
+Cette bonne pratique s'explique par l'utilisation des repository distant (Github/Gitlab/Jenkins) pour l'intégration continue. 
+Pour builder une application, il est nécessaire d'avoir toutes les informations, à savoir *code, dockerfile, ressources statiques*, au même endroit. 
+
+
 - Créer un Dockerfile qui permet de :
   - docker run --rm cowsay Hello_World !
   - docker run --rm cowsay -f stegosaurus Ynov B3
 
-![](https://i.imgur.com/97VfAgl.png)
+![Dockerfile](https://i.imgur.com/97VfAgl.png)
 
-https://i.imgur.com/97VfAgl.png
+Le Dockerfile est basé sur une image Ubuntu car le paquet **Cowsay** est présent dans les dépôts de paquet officiel.
+Pour optimiser le build nous aurions pu utiliser une image de base plus légère.
+
+Une image Docker est composé de layer ou de couche. Chaques instructions rajoute une couche à l'image, c'est pourquoi il faut quand c'est possible optimiser les commandes et réduire le nombre d'instructions. Cela réduira le temps de build.
+
+Lors de l'installation de paquet pour personnaliser notre image, il faut absolument rendre les commandes non interactives car nous n'avons pas la main pour renseigner des paramètres (Par exemple : *yes* pour l'installation de paquet) lors du build. 
+Pour cela nous rajoutons le flag **-y** qui permet d'auto-valider les paquets lors de l'installation. 
+Nous aurions aussi pu rajouter une variable d'environnement ajouté avant la commandne `apt` : ` DEBIAN_FRONTEND=noninteractive`.
+
+Extrait du man `debconf`: 
+  noninteractive
+          This is the anti-frontend. It never interacts with you  at  all,
+          and  makes  the  default  answers  be used for all questions. It
+          might mail error messages to root, but that's it;  otherwise  it
+          is  completely  silent  and  unobtrusive, a perfect frontend for
+          automatic installs. If you are using this front-end, and require
+          non-default  answers  to questions, you will need to preseed the
+          debconf database; see the section below  on  Unattended  Package
+          Installation for more details.
 
 - Faut-il utiliser **CMD** ou **ENTRYPOINT** ? 
 
