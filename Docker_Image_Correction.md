@@ -107,10 +107,9 @@ En rajoutant la commande **exec** devant le lancement du programme Java nous pou
 
 ![image](https://user-images.githubusercontent.com/51991304/141197592-3f96dbe3-a4b6-4ee0-815c-648e0d2141f3.png)
 
-
-![image](https://user-images.githubusercontent.com/51991304/141197565-e47b2227-a07c-4847-9ab6-b4dd11e362b4.png)
-
 ### db
+
+![image](https://user-images.githubusercontent.com/51991304/141198021-c90d305d-0a14-4cb6-a9cb-8201cf47e128.png)
 
 
 ## Exercice 3: Run Flask App 
