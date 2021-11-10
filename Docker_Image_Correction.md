@@ -28,7 +28,9 @@ Pour cela nous rajoutons le flag **-y** qui permet d'auto-valider les paquets lo
 Nous aurions aussi pu rajouter une variable d'environnement ajouté avant la commandne `apt` : ` DEBIAN_FRONTEND=noninteractive`.
 
 Extrait du man `debconf`: 
+
   noninteractive
+  
           This is the anti-frontend. It never interacts with you  at  all,
           and  makes  the  default  answers  be used for all questions. It
           might mail error messages to root, but that's it;  otherwise  it
