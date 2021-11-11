@@ -121,45 +121,100 @@ Nous pouvons naviguer sur notre navigateur et accéder au front de l'application
 
 ## Exercice 3: Run Flask App 
 
--  Créer le Dockerfile dans le dossier microblog qui va permettre de faire tourner l'application Flask : 
-  -  Utilisez l'image `python:3-alpine` ou une image de base `Ubuntu`et installer Python
-  -  Flask utilise une variable d'environnement `FLASK_APP`avec le nom du fichier Python de l'application. 
-  -  Installer flask dans votre container : `requirements.txt`. Pensez à utiliser la fonction de cache de Docker
-  -  Exposer le port 5000
-  -  Liser le fichier `boot.sh` et faites tourner l'application Flask en PROD. 
-  -  Lancez l'app avec le fichier `boot.sh`
-- Construire l'image  
-- Lancer le container en publiant un port de votre hôte.  
-- Accéder à http://localhost:5000
+### Créer le Dockerfile dans le dossier microblog qui va permettre de faire tourner l'application Flask : 
 
-### Exercice 3.5 FALCULTATIF :
+```yaml
+# Flask étant une API Python on aurait pu utiliser l'image Python 
+# On utilise donc Ubuntu comme image de base
+# et on install Python
+FROM ubuntu
 
-- Construisez un second Dockerfile pour une nouvelle application microblog (Dupliquer le dossier microblog)
-  - Remplacer le script de boot par  : 
-```sh
-#!/bin/bash
+RUN apt-get -y update 
+RUN apt-get install -y python pip
 
-# cette partie permet de faire varier l'environnement du container
-set -e
-if [ "$APP_ENVIRONMENT" == 'DEV' ]; then
-    echo "Running Development Server"
-    FLASK_ENV=development exec flask run -h 0.0.0.0
-else
-    echo "Running Production Server"
-    exec gunicorn -b :5000 --access-logfile - --error-logfile - microblog:app
-fi
+# Copie des dépendances avant le dossier pour
+# amméliorer le cache de l'image
+COPY requirements.txt .
+
+# Installation des dépendances
+RUN pip install -qr requirements.txt
+
+# Ajout d'une variable d'environment
+# nécessaire à l'utilisation de Flask
+ENV FLASK_APP microblog.py
+
+# Copie du projet séparé des dépendances
+# pour ne pas réinstaller toutes les dépendances
+# lors de la modification du code du projet
+COPY ./ /microblog
+
+# L'instruction Workdir permet de se déplacer dans un dossier
+# dans le container. Si le dossier n'existe pas il sera crée
+WORKDIR /microblog
+
+ENV CONTEXT PROD
+
+# L'instruction EXPOSE permet d'informer Docker
+# que le container ecoute sur le réseau spécifié
+# Par défaut le port renseigné va être en TCP
+# L'instruction EXPOSE ne va pas publier le port
+# Pour le publier il faut le renseigner dans le docker run avec -p ou -P
+# Cette instruction est plus une forme de documentation
+# On peut publier tout les ports exposés avec un -P 
+# Le port sera exposé en TCP et en UDP à l'aide un port éphémère 
+EXPOSE 5000
+
+CMD ["./boot.sh"]
 ```
-- Déclarer la variable d'environnement `APP_ENVIRONMENT` à `PROD`par défault
-- Construisez l'image
-- Déployer **2** containers. Un de PROD et un de DEV sur un port différent. 
+
+### Construire l'image  
+
+![image](https://user-images.githubusercontent.com/51991304/141365551-e65b149c-5621-446d-901c-edee5ea06220.png)
+
+On voit bien qu'en rebuildant l'image plusieurs fois, la fonction de cache de Docker est mise en place et on ne réinstalle pas les dépendances inutilement. 
+
+### Lancer le container en publiant un port de votre hôte.  
+### Accéder à http://localhost:5000
+
+![image](https://user-images.githubusercontent.com/51991304/141366019-4d7e7f1b-c0be-4de8-a92b-33655726b50d.png)
 
 ## Exercice 4 : Healthcheck 
 
 - Créer un nouveau dossier `Healthcheck`
+  - On créer un sous dossier pour chaque application. Comme vu précédemment il s'agit d'une bonne pratique pour permettre aux outils CI de gérer les applications/ 
 - Créer un Dockerfile pour déployer l'application `app.py`
   - Lancez l'application avec `python app.py`
 - Rajouter un `HEALTHCHECK` dans le Dockerfile pour monitorer l'état de santé du container
   - Voici la commande du HEALTHCHECK `curl --fail http://localhost:5000/health || exit 1`  
 - Expliquer le code Python ainsi que le lien avec l'instruction HEALTHCHECK de votre Dockerfile
 
+![image](https://user-images.githubusercontent.com/51991304/141366378-e610b473-8f51-452d-a39d-b9b25da7c371.png)
 
+Le code python est une simple application FlasK.  
+
+Chaque route permet de créer une page web.
+L'application défini une variable globale `healthy` par défaut à `True`. 
+
+Sur la page `/health` l'application vérifie la variable booléenne. Si elle est à `True` le serveur renvoie une réponse HTTP avec un code **200** qui signifie Success. 
+Si la variable est `False` alors le service va renvoyer une réponse **500** qui signifie une erreur côté serveur. 
+La page `/kill` permet de définir la variable `healthy` à `False`. 
+
+L'instruction `HEALTHCHECK` va requêter notre application sur la page `/health` toutes les 5 secondes et si l'application renvoie un code **500** (option --fail de curl) alors la commande va faire un `exit 1`.  
+
+L'instruction `HEALTHCHECK` indique à Docker comment tester votre container pour vérifier qu'il fonctionne toujours correctement.
+
+L'instruction HEALTHCHECK peut renvoyer 3 codes de retour :
+
+    0: success - the container is healthy and ready for use
+    1: unhealthy - the container is not working correctly
+    2: reserved - do not use this exit code
+    
+Notre instruction a un code retour 1 lorsqu'on lui envoie `/kill`. 
+
+Vous allez constaster visuellement de votre côté, 3 états possibles :
+
+    Starting: Votre container est en cours de démarrage.
+    Healthy: La commande de check renvoie un success. Votre container est fonctionnel.
+    Unhealthy: Votre container ne fonctionne pas correctement !
+    
+ Source : https://www.grottedubarbu.fr/docker-healthcheck/ 
