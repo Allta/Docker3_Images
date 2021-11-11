@@ -15,7 +15,16 @@ COPY static static
 # Compiler l'app Go
 RUN go build dispatcher.go
 
+# On relance une image de base pour repartir sur une base saine sans le compilateur Go
+# On appelle ça un build multi-stage
+# Les stages sont identifiés par des numéros 
+# partant de 0 en comptant le nombre d'instructions FROM
+FROM ubuntu
+
+# On copie le programme compilé dans le stage 0 
+# dans notre nouvelle image de base
+COPY --from=0 /go/dispatcher .
+
 # En utilisant la syntax exec on s'assure que
 # "./dispatcher" sera PID 1
-
 CMD ["./dispatcher"]

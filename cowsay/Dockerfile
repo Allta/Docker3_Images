@@ -1,7 +1,7 @@
 FROM ubuntu 
-RUN apt-get update && \
-    apt-get -y install cowsay
+RUN apt-get update 
+RUN apt-get -y install cowsay
     
-RUN export PATH=$PATH:/usr/games
+ENV PATH="$PATH:/usr/games"
 
 ENTRYPOINT [ "cowsay"]

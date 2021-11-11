@@ -5,8 +5,8 @@ FROM ubuntu
 RUN apt-get update
 RUN apt-get install maven openjdk-8-jdk -y
 
-
 # Copie des fichiers de dépendances avant de copier le projet
+# Cela permet d'utiliser la fonction de cache de Docker build
 COPY pom.xml .
 
 # Installation des dépendances
@@ -19,11 +19,6 @@ RUN mvn verify
 # Plutot que de créer un sous dossier src dans le container
 COPY src src
 
-# Build the code. Note: this will place multiple
-# JAR files in a directory named "target". There
-# will be our compiled code ("words.jar") but also
-# its dependencies.
-
 # Build l'application 
 # Cela va créer un dossier target avec un fichier words.jar
 RUN mvn verify
@@ -32,4 +27,11 @@ RUN mvn verify
 # pour lancer le programme en PID 1
 # CMD plutot qu'entrypoint car on est sur un service
 # On ne souhaite pas rajouter des arguments à notre commande
-CMD java -Xmx8m -Xms8m -jar target/words.jar
+
+# Pour être sur que le PID 1 soit le programme Java 
+# On utilise la syntaxe exec
+# Cette syntace peut être écrite en mode json ou en 
+# rajoutant la commande exec
+CMD exec java -Xmx8m -Xms8m -jar target/words.jar
+
+
